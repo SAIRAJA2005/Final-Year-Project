@@ -1,0 +1,53 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ./Brain-Tumor-Detection-and-Segmentation-using-Deep-Learning
+      dockerfile: Dockerfile
+    container_name: brain-tumor-backend
+    ports:
+      - "8000:8000"
+    environment:
+      - IMG_SIZE=120
+      - BACKEND_HOST=0.0.0.0
+      - BACKEND_PORT=8000
+      - LOG_LEVEL=INFO
+      - TF_CPP_MIN_LOG_LEVEL=2
+    volumes:
+      - ./Brain-Tumor-Detection-and-Segmentation-using-Deep-Learning:/app
+      - ./BraTS_small/weights:/app/../BraTS_small/weights
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - brain-network
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./Brain-health_frontend
+      dockerfile: Dockerfile
+    container_name: brain-tumor-frontend
+    ports:
+      - "3000:3000"
+    environment:
+      - VITE_API_URL=http://localhost:8000
+    depends_on:
+      backend:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - brain-network
+    restart: unless-stopped
+
+networks:
+  brain-network:
+    driver: bridge
