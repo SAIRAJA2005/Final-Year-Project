@@ -67,7 +67,7 @@ echo.
 
 REM Start backend in new terminal
 start "Brain Tumor Detection - Backend (FastAPI)" cmd /k ^
-    "call venv\Scripts\activate.bat && python -m uvicorn app:app --host 0.0.0.0 --port 8000 --log-level info"
+    "call venv\Scripts\activate.bat && python -m uvicorn app:app --host 127.0.0.1 --port 8000 --log-level info"
 
 echo [3/4] Waiting for backend to initialize (10 seconds)...
 timeout /t 10 /nobreak

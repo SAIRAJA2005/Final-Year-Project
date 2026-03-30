@@ -1,6 +1,6 @@
 import { createContext, useContext, useState, useEffect, type ReactNode } from "react";
 
-export type ModelType = "mask-rcnn" | "u-net" | null;
+export type ModelType = "mask-rcnn" | "unet" | null;
 
 interface AppState {
   selectedModel: ModelType;

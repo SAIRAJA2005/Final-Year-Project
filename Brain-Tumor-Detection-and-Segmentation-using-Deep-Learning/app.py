@@ -31,14 +31,28 @@ app = FastAPI(
     version="1.0.0"
 )
 
-# Allow CORS for local dev
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+
+# Allow CORS for frontend only in production
+# Set ALLOWED_ORIGINS env var to comma-separated list of allowed origins (e.g. https://your-frontend.com)
+ALLOWED_ORIGINS = os.getenv("ALLOWED_ORIGINS", "*").split(",")
+if ALLOWED_ORIGINS == ["*"]:
+    # Development: allow all
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=["*"],
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
+else:
+    # Production: restrict to allowed origins
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=ALLOWED_ORIGINS,
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
 
 # Configuration from environment variables or defaults
 IMG_SIZE = int(os.getenv("IMG_SIZE", 120))
@@ -116,9 +130,15 @@ async def analyze_image(file: UploadFile = File(...), model_type: str = Form(...
     if not file:
         raise HTTPException(status_code=400, detail="No file provided")
     
+    # Normalize model type values from frontend to server values
+    if isinstance(model_type, str):
+        model_type = model_type.strip().lower()
+        if model_type == "u-net":
+            model_type = "unet"
+
     if model_type not in ["unet", "mask-rcnn"]:
         raise HTTPException(status_code=400, detail=f"Unknown model type: {model_type}")
-    
+
     try:
         logger.info(f"Processing file: {file.filename} with model: {model_type}")
         contents = await file.read()

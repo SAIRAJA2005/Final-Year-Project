@@ -14,6 +14,8 @@ services:
       - BACKEND_PORT=8000
       - LOG_LEVEL=INFO
       - TF_CPP_MIN_LOG_LEVEL=2
+      # Set ALLOWED_ORIGINS to your frontend domain for production CORS (comma-separated if multiple)
+      - ALLOWED_ORIGINS=http://localhost:3000
     volumes:
       - ./Brain-Tumor-Detection-and-Segmentation-using-Deep-Learning:/app
       - ./BraTS_small/weights:/app/../BraTS_small/weights

@@ -49,8 +49,8 @@ const ModelSelection = () => {
           description="Perform pixel-wise segmentation of tumor sub-regions on FLAIR MRI sequences with color-coded overlays."
           icon={<Layers className="h-6 w-6" />}
           features={["Full tumor (Blue)", "Tumor core (Yellow)", "Enhancing tumor (Red)", "FLAIR MRI input (NIfTI/PNG)"]}
-          selected={selectedModel === "u-net"}
-          onSelect={() => setSelectedModel("u-net" as ModelType)}
+          selected={selectedModel === "unet"}
+          onSelect={() => setSelectedModel("unet" as ModelType)}
           delay={0.2}
         />
       </div>
